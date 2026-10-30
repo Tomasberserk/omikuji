@@ -20,7 +20,7 @@ export default function ShakeAnimation() {
     <section
       role="status"
       aria-live="polite"
-      className="screen safe-b relative flex flex-col items-center justify-center px-6 pb-12 pt-10 text-center"
+      className="screen relative flex flex-col items-center justify-center px-6 pb-[calc(3rem+env(safe-area-inset-bottom,0px))] pt-10 text-center"
     >
       <div className="relative h-[21rem] w-60" aria-hidden="true">
         <span className="absolute bottom-[-10px] left-1/2 h-7 w-52 -translate-x-1/2 rounded-[50%] bg-ink/25 blur-md" />

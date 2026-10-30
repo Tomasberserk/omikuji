@@ -9,6 +9,8 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
+    "stand": "powershell -ExecutionPolicy Bypass -File scripts/serve-local.ps1",
+    "test": "node --test \"tests/**/*.test.mjs\"",
     "check:fortunes": "node scripts/validate-fortunes.mjs"
   },
   "dependencies": {

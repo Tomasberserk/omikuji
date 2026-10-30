@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { RotateCcw, Lightbulb } from 'lucide-react'
 
 function Rod() {
@@ -17,9 +17,13 @@ function Rod() {
 export default function FortuneScroll({ fortune, onReset }) {
   // `open` flips on the next frame so the unroll transition actually plays.
   const [open, setOpen] = useState(false)
+  const headingRef = useRef(null)
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setOpen(true))
+    const frame = requestAnimationFrame(() => {
+      setOpen(true)
+      headingRef.current?.focus({ preventScroll: true })
+    })
     return () => cancelAnimationFrame(frame)
   }, [])
 
@@ -29,7 +33,7 @@ export default function FortuneScroll({ fortune, onReset }) {
     <section
       role="status"
       aria-live="polite"
-      className="screen relative flex flex-col items-center justify-center px-4 py-5"
+      className="screen relative flex flex-col items-center justify-center px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] pt-5"
     >
       <div className="mb-3 flex items-center justify-center gap-3">
         <span aria-hidden="true" className="h-px w-7 bg-gold/70" />
@@ -71,7 +75,11 @@ export default function FortuneScroll({ fortune, onReset }) {
                 {fortune.kanji}
               </p>
 
-              <h2 className="mt-2 font-display text-2xl font-extrabold leading-tight text-ink">
+              <h2
+                ref={headingRef}
+                tabIndex={-1}
+                className="mt-2 font-display text-2xl font-extrabold leading-tight text-ink focus:outline-none"
+              >
                 {fortune.typeEn}
               </h2>
               <p className="font-display text-base font-medium text-vermilion-dark">

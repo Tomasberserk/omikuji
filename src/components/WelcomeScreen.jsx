@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Smartphone, Sparkles } from 'lucide-react'
 
 const PRIMARY =
@@ -22,9 +23,16 @@ export default function WelcomeScreen({ onDraw, motion }) {
   const { status, noSignal, requestPermission } = motion
   const needsPermission = status === 'needs-permission'
   const noMotion = status === 'denied' || status === 'unsupported'
+  const headingRef = useRef(null)
+
+  // Moving focus to the heading keeps keyboard and screen-reader users oriented
+  // when this screen replaces the previous one.
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true })
+  }, [])
 
   return (
-    <section className="screen relative flex flex-col items-center justify-center px-6 pb-8 pt-8 text-center">
+    <section className="screen relative flex flex-col items-center justify-center px-6 pb-[calc(2rem+env(safe-area-inset-bottom,0px))] pt-8 text-center">
       {/* Vertical shrine-style label, purely decorative */}
       <span
         aria-hidden="true"
@@ -49,7 +57,11 @@ export default function WelcomeScreen({ onDraw, motion }) {
         </div>
       </div>
 
-      <h1 className="font-display text-[1.85rem] font-extrabold leading-[1.12] text-vermilion-dark sm:text-5xl">
+      <h1
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display text-[1.85rem] font-extrabold leading-[1.12] text-vermilion-dark focus:outline-none sm:text-5xl"
+      >
         Japanese Omikuji
         <span className="mt-1.5 block text-[1.25rem] font-bold tracking-wide text-ink sm:text-3xl">
           Fortune &amp; Destiny
@@ -85,7 +97,7 @@ export default function WelcomeScreen({ onDraw, motion }) {
           </div>
           <p className="mt-3 max-w-[17rem] text-sm leading-snug text-ink/70">
             {status === 'denied'
-              ? 'Motion access is off. You can still draw by tapping.'
+              ? 'Motion is off. You can still tap to draw. To turn it on, allow Motion & Orientation in your browser settings.'
               : "This device can't detect motion. You can still draw by tapping."}
           </p>
           <button type="button" onClick={onDraw} className={PRIMARY}>

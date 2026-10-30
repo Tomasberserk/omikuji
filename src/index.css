@@ -46,10 +46,6 @@
     min-height: 100svh;
   }
 
-  .safe-b {
-    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
-  }
-
   /* Washi paper: warm grain on top of the parchment colour. */
   .washi {
     background-color: #fbf1da;

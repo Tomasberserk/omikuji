@@ -1,12 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { createShakeDetector } from '../lib/shakeDetector.js'
 
-// A deliberate shake produces large frame-to-frame changes in acceleration.
-// Walking or handling the phone stays well below this.
-const DELTA_THRESHOLD = 18
-const HITS_NEEDED = 3
-const HIT_WINDOW_MS = 900
-const COOLDOWN_MS = 1500
-const ARM_DELAY_MS = 900
 const SIGNAL_TIMEOUT_MS = 2500
 
 /**
@@ -66,10 +60,8 @@ export function useShake({ onShake, enabled }) {
   useEffect(() => {
     if (!enabled || status !== 'listening') return
 
-    const armedAt = performance.now() + ARM_DELAY_MS
-    let last = null
-    let hits = []
-    let lastFire = 0
+    const detector = createShakeDetector()
+    detector.arm(performance.now())
 
     const handleMotion = (event) => {
       const accel = event.accelerationIncludingGravity || event.acceleration
@@ -80,33 +72,9 @@ export function useShake({ onShake, enabled }) {
         setHasSignal(true)
       }
 
-      const now = performance.now()
-      if (now < armedAt || now - lastFire < COOLDOWN_MS) {
-        last = accel
-        return
+      if (detector.push(accel, performance.now())) {
+        onShakeRef.current?.()
       }
-
-      if (last) {
-        const delta =
-          Math.abs(accel.x - last.x) +
-          Math.abs(accel.y - last.y) +
-          Math.abs(accel.z - last.z)
-
-        if (delta > DELTA_THRESHOLD) {
-          hits = hits.filter((time) => now - time < HIT_WINDOW_MS)
-          hits.push(now)
-
-          if (hits.length >= HITS_NEEDED) {
-            hits = []
-            lastFire = now
-            last = accel
-            onShakeRef.current?.()
-            return
-          }
-        }
-      }
-
-      last = accel
     }
 
     window.addEventListener('devicemotion', handleMotion, { passive: true })

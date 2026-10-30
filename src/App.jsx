@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FORTUNES } from './data/fortunes.js'
+import { pickFortune } from './lib/pickFortune.js'
 import { useShake } from './hooks/useShake.js'
 import SakuraBackground from './components/SakuraBackground.jsx'
 import WelcomeScreen from './components/WelcomeScreen.jsx'
@@ -7,12 +8,6 @@ import ShakeAnimation from './components/ShakeAnimation.jsx'
 import FortuneScroll from './components/FortuneScroll.jsx'
 
 const SHAKE_MS = 1500
-
-// Picks a random fortune and never repeats the previous one.
-function pickFortune(previousId) {
-  const pool = FORTUNES.filter((fortune) => fortune.id !== previousId)
-  return pool[Math.floor(Math.random() * pool.length)]
-}
 
 const vibrate = (pattern) => {
   if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
@@ -30,6 +25,22 @@ export default function App() {
   // Cancel a pending draw if the screen is left mid-animation.
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
+  // If the visitor switches apps or locks the phone while the cylinder is
+  // shaking, the reveal would happen off-screen. Cancel and start over.
+  useEffect(() => {
+    if (phase !== 'shaking') return
+
+    const handleVisibility = () => {
+      if (document.visibilityState !== 'hidden') return
+      clearTimeout(timerRef.current)
+      busyRef.current = false
+      setPhase('welcome')
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [phase])
+
   // Every new phase starts at the top, so the scroll is always fully visible.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' })
@@ -43,7 +54,7 @@ export default function App() {
     vibrate([60, 40, 60, 40, 60])
     setPhase('shaking')
     timerRef.current = setTimeout(() => {
-      setFortune((previous) => pickFortune(previous?.id))
+      setFortune((previous) => pickFortune(FORTUNES, previous?.id))
       setPhase('revealed')
       busyRef.current = false
     }, SHAKE_MS)
