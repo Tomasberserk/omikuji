@@ -66,7 +66,7 @@ src/
   index.css              capas Tailwind, papel washi, safe-area, reduced-motion
   App.jsx                estados y temporizador
   hooks/useShake.js      detección del agitado y permisos de iOS
-  data/fortunes.js       las 5 fortunas (texto, kanji, icono)
+  data/fortunes.js       las 15 fortunas (texto, kanji, icono)
   components/
     SakuraBackground.jsx pétalos de sakura
     WelcomeScreen.jsx    invitación a agitar + respaldo por tap
@@ -77,7 +77,9 @@ scripts/deploy.ps1       build + push a gh-pages
 qr/                      QR y cartel para imprimir
 ```
 
-Para agregar o cambiar una fortuna, edita `src/data/fortunes.js`. El campo `Icon` es un componente de `lucide-react`.
+Para agregar o cambiar una fortuna, edita `src/data/fortunes.js`. El campo `Icon` es un componente de `lucide-react`. Después corre `npm run check:fortunes` para validar ids, números e íconos.
+
+Hay 15 fortunas repartidas en cinco rangos tradicionales, de mejor a menor: **大吉 Daikichi**, **中吉 Chūkichi**, **小吉 Shōkichi**, **吉 Kichi** y **末吉 Suekichi**. Varias fortunas comparten rango (como en una caja de omikuji real); lo que cambia es el tema y el consejo. No hay fortunas malas (凶) a propósito.
 
 ## QR y cartel para el stand
 
