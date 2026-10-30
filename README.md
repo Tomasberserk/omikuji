@@ -57,6 +57,22 @@ La fortuna se elige al azar y nunca repite la anterior (`pickFortune` en `App.js
 
 Nota: la API de movimiento solo funciona en **HTTPS** (GitHub Pages ya lo cumple) y con la pestaña visible.
 
+## Sonido
+
+Todo el audio se sintetiza en el navegador con la Web Audio API: no hay archivos de música ni problemas de licencias.
+
+- **Ambiente:** koto suave sobre escala hirajoshi (A, B, C, E, F) con un drone grave.
+- **Espera:** tambores taiko que aceleran y un riser de ruido mientras gira el cilindro.
+- **Revelado:** gong grave y dos campanas.
+- **Interfaz:** golpe de madera al reiniciar y sonido de papel al desenrollarse.
+- **Silencio:** botón arriba a la izquierda, en todas las pantallas.
+
+Los navegadores no permiten audio sin un gesto del usuario. La música arranca con el primer toque: en iOS es el toque de **Enable Shake**. Si alguien agita sin tocar, la primera tirada puede salir en silencio; desde el primer toque ya suena.
+
+En el stand, si hay varios celulares juntos, conviene silenciar algunos o dejar un solo celular de demostración con sonido: tres ambientes distintos al mismo tiempo se convierten en ruido.
+
+Ojo en iPhone: el interruptor físico de silencio también silencia la Web Audio. Antes del evento, revisa que el celular de demostración no esté en modo silencio.
+
 
 ## Estructura
 
@@ -70,9 +86,11 @@ src/
   hooks/useShake.js      detección del agitado y permisos de iOS
   lib/shakeDetector.js   algoritmo puro (testeable)
   lib/pickFortune.js     selección sin repetir
+  lib/audio.js           música y efectos sintetizados
   data/fortunes.js       las 15 fortunas (texto, kanji, icono)
   components/
     SakuraBackground.jsx pétalos de sakura
+    SoundToggle.jsx      botón de silencio
     WelcomeScreen.jsx    invitación a agitar + respaldo por tap
     ShakeAnimation.jsx   cilindro de bambú
     FortuneScroll.jsx    pergamino con varillas
@@ -135,6 +153,7 @@ También existe `npm run check:fortunes` para validar los datos después de edit
 - Si la pestaña se oculta durante la animación, la tirada se cancela y vuelve al inicio (no se revela una fortuna que nadie vio).
 - El foco se mueve al encabezado de cada pantalla para lectores de pantalla y teclado.
 - `npm test` cubre el detector, la selección y los datos.
+- Audio probado en navegador: contexto activo tras el primer toque, silencio durante la espera, ambiente de vuelta tras el revelado y el botón de silencio funcionando.
 - Botones de 56 px de alto, foco visible, `aria-live` en las fases y `prefers-reduced-motion` respetado.
 - Lighthouse: 100 en accesibilidad, buenas prácticas y SEO.
 

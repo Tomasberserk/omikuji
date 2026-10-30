@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { RotateCcw, Lightbulb } from 'lucide-react'
+import { audio } from '../lib/audio.js'
 
 function Rod() {
   return (
@@ -20,7 +21,10 @@ export default function FortuneScroll({ fortune, onReset }) {
   const headingRef = useRef(null)
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setOpen(true))
+    const frame = requestAnimationFrame(() => {
+      setOpen(true)
+      audio.playUnroll()
+    })
     return () => cancelAnimationFrame(frame)
   }, [])
 
