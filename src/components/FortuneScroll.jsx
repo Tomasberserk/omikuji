@@ -20,12 +20,17 @@ export default function FortuneScroll({ fortune, onReset }) {
   const headingRef = useRef(null)
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setOpen(true)
-      headingRef.current?.focus({ preventScroll: true })
-    })
+    const frame = requestAnimationFrame(() => setOpen(true))
     return () => cancelAnimationFrame(frame)
   }, [])
+
+  // Focus only after the paper has started to unroll. While it is still
+  // collapsed (grid 0fr + overflow hidden) the heading cannot take focus.
+  useEffect(() => {
+    if (!open) return
+    const timer = setTimeout(() => headingRef.current?.focus({ preventScroll: true }), 120)
+    return () => clearTimeout(timer)
+  }, [open])
 
   const { Icon } = fortune
 

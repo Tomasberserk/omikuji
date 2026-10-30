@@ -2,6 +2,7 @@ node_modules
 dist
 dist-ssr
 *.local
+qr/qr-local.png
 .DS_Store
 .vscode/*
 !.vscode/extensions.json

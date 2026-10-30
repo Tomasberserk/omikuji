@@ -14,10 +14,16 @@ if (-not (Test-Path (Join-Path $root 'dist\index.html'))) {
   if ($LASTEXITCODE -ne 0) { throw "Build failed" }
 }
 
-$ip = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
-  Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' } |
-  Sort-Object InterfaceMetric |
-  Select-Object -First 1 -ExpandProperty IPAddress
+$ip = (Get-NetIPConfiguration -ErrorAction SilentlyContinue |
+    Where-Object { $_.IPv4DefaultGateway -and $_.NetAdapter.Status -eq 'Up' } |
+    Select-Object -First 1).IPv4Address.IPAddress
+
+if (-not $ip) {
+  $ip = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+    Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' } |
+    Sort-Object InterfaceMetric |
+    Select-Object -First 1 -ExpandProperty IPAddress
+}
 
 if (-not $ip) { $ip = 'localhost' }
 $url = "http://${ip}:$Port/"
@@ -40,4 +46,4 @@ catch {
 
 Write-Host ""
 Write-Host "Starting server... (Ctrl+C to stop)" -ForegroundColor Cyan
-npm run preview -- --host --port $Port
+npx vite preview --host --port $Port
